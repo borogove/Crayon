@@ -1,5 +1,5 @@
 
-int ledPins[] =  { 9, 1, 2, 23 };
+int ledPins[] =  { LED_A, LED_B, LED_C, LED_D };
 int ledState[] = { 0,0,0,0 };
 
 bool do_ripple = true;
@@ -10,7 +10,7 @@ bool blink_state = false;
 
 void setup_leds()
 {
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < NUM_LEDS; i++)
   {
     pinMode( ledPins[i], OUTPUT );
   }
@@ -20,12 +20,12 @@ int ledCounter = 0;
 void rippleLeds()
 {
   ledCounter++;
-  if (ledCounter == 4)
+  if (ledCounter == NUM_LEDS)
   {
     ledCounter = 0;
   }
 
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < NUM_LEDS; i++)
   {
     digitalWrite( ledPins[i], ledCounter == i ? HIGH : LOW );
   }
@@ -34,7 +34,7 @@ void rippleLeds()
 
 void refreshLeds()
 {
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < NUM_LEDS; i++)
   {
   	int pinState = LOW;
   	if (ledState[i] == 1) { pinState = HIGH; }

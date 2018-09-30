@@ -10,12 +10,15 @@
 #define DAC_A       A14
 #define SERIALOUT_A 10
 #define SERIALIN_A  26
+#define NUM_BUTTONS 2
 #define BUTTON_A    7
 #define BUTTON_B    8
+#define NUM_KNOBS   2
 #define KNOB_A      A4
 #define KNOB_B      A3
 #define MIDIOUT_A   5
 #define MIDIIN_A    0
+#define NUM_LEDS    4
 #define LED_A       9
 #define LED_B       1
 #define LED_C       2

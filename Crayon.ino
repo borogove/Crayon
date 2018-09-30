@@ -55,6 +55,9 @@ volatile long resoComplement = 32768-resoDepth;
 volatile long resoRatio = 3453;
 
 
+int oscillatorShape = 0;
+int vibratoDepth = 16;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -63,9 +66,14 @@ void setup() {
   setup_serialLcd();
   setup_leds();
   setup_midi();
+  setup_knobs();
 
   set_button_action( BUTTON_A, page_up );
   set_button_action( BUTTON_B, page_down );
+
+  set_knob_action( KNOB_A, select_parameter );
+  set_knob_action( KNOB_B, change_parameter );
+  
 
 }
 
@@ -76,8 +84,9 @@ void loop() {
   update_serialLcd();
   update_leds();
   update_midi();
+  update_knobs();
  
-  tick();
+  //tick();
 
 }
 
