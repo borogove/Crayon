@@ -1,5 +1,5 @@
-SoftwareSerial lcd = SoftwareSerial(26,10);
-
+//SoftwareSerial lcd = SoftwareSerial(26,10);
+#define lcd Serial2
 
 void serialLcdClear()
 {
@@ -20,12 +20,14 @@ void serialLcdCursorLeft()
     // clear sparkfun LCD
   lcd.write(254);
   lcd.write(0x10);
-}void serialLcdCursorRight()
+}
+void serialLcdCursorRight()
 {
     // clear sparkfun LCD
   lcd.write(254);
   lcd.write(0x14);
-}void serialLcdScrollLeft()
+}
+void serialLcdScrollLeft()
 {
     // clear sparkfun LCD
   lcd.write(254);
@@ -51,7 +53,9 @@ void display(char* text)
 void setup_serialLcd()
 {
   delay(100);
-  // LCD output
+
+
+  lcd.setRX(26);
   lcd.begin(9600);
 
   serialLcdClear();

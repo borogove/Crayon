@@ -196,13 +196,20 @@ void update_param_display()
 {
     if (updatePending >= 0)
     {
-        int value = paramValue[updatePending];
-        serialLcdClear();
-        sprintf(buf1,"%16s",paramLabels[updatePending]);
-        display( buf1 );
+        if (display_update_wait <= 0)
+        {
+            int value = paramValue[updatePending];
 
-        sprintf(buf2, "%5d          ", value);
-        display( buf2);
-        updatePending = -1;
+            serialLcdClear();
+            sprintf(buf1,"%16s",paramLabels[updatePending]);
+            display( buf1 );
+
+            sprintf(buf2, "%5d          ", value);
+            display( buf2);
+            updatePending = -1;
+
+            // don't try to update the display too fast
+            display_update_wait = SAMPLE_RATE / 20;
+        }
     }
 }

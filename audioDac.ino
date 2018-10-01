@@ -103,6 +103,11 @@ void audioDac_interrupt( void )
 {
     analogWrite( DAC_A, audioChannel.ReadNative() );
     dacBufferAvailable = true;
-    tick();
+    //tick();
 
+    // clock the LCD parameter updates
+    if (display_update_wait > 0)
+    {
+        display_update_wait--;
+    }
 }

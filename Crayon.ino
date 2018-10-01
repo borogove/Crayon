@@ -60,6 +60,7 @@ volatile long resoRatio = 3453;
 int oscillatorShape = 0;
 int vibratoDepth = 16;
 
+volatile long display_update_wait = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -89,7 +90,7 @@ void loop() {
   update_knobs();
   update_param_display();
  
-  //tick();
+  tick();
 
 }
 
