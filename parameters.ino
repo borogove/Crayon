@@ -90,44 +90,119 @@ const char* paramLabels[] =
 
 short paramValue[ NumParams ];
 
-int paramSelectRaw;
 int currentParam;
 
 char buf1[32];
 char buf2[32];
 
-int dejitter = 1;
+volatile int updatePending = -1;
+
+void setOscMix( short mx )
+{
+    int x;
+
+    if (mx < 128)
+    {
+        x = mx*2;
+        // first half is saw-to-square
+        sawMix = 255-x;    
+        sqrMix = x;
+        triMix = 0; 
+    }
+    else
+    {
+        x = (mx-128) * 2;
+        sawMix = 0;
+        sqrMix = 255-x;
+        triMix = x;
+    }
+}
+
+void setResoRatio( short r )
+{
+    // oof. reso ratio goes from 0.5 (down one octave, 
+    // which may not be useful) to... 32? up 5 octaves?
+    // but the resoRatio value is scaled by 1024, so: 
+    // 512 - 32768? Ideally it should probably be 
+    // roughly exponential as well :/ 
+
+    int scale = 16;
+    int start = 512;
+
+    while (r > 32)
+    {
+        scale *= 2;
+        r -= 32;
+        start *= 2;
+    }
+    resoRatio = start + scale * r;
+}
 
 void setParam( int paramIndex, short value )
 {
     paramValue[paramIndex] = value;
-    serialLcdClear();
-    sprintf(buf1,"%16s",paramLabels[paramIndex]);
-    display( buf1 );
+    updatePending = paramIndex;
 
-    sprintf(buf2, "%5d          ", value);
-    display( buf2);
+    switch (paramIndex)
+    {
+    case WaveShape: setOscMix(value);       break;
+    case ResoRatio: setResoRatio(value);    break;
+    case ResoDepth: resoDepth = value*128; resoComplement = 32768-resoDepth;    break;
+
+    case EnvelopeAttack:    attackSetting = value;  break;
+    case EnvelopeDecay:     decaySetting = value;   break;
+    case EnvelopeSustain:   sustainLevel = (MAX_ENV >> 8) * value; break;
+    case EnvelopeRelease:   releaseSetting = value; break;
+
+    case LfoShape:      /* TODO */      break;
+    case LfoRate:       lfoDeltaPhase = lfoTable[value];    break;
+
+    case GatePattern:        gatePattern = value;       break;
+    case GateContour:        /* TODO */                 break;
+    case GateRate:           gateDeltaPhase = lfoTable[value]>>3;    break;
+
+    // ALL MODS TODO
+    case ModEnvPitch:       break;              
+    case ModEnvShape:       break;   
+    case ModEnvRatio:       break;   
+    case ModEnvReso:        break;   
+    case ModLfoPitch:       break;   
+    case ModLfoShape:       break;   
+    case ModLfoRatio:       break;   
+    case ModLfoReso:        break;   
+    case ModLfoAmp:         break;   
+    case ModGatePitch:      break;   
+    case ModGateShape:      break;   
+    case ModGateRatio:      break;   
+    case ModGateReso:       break;   
+    case ModGateAmp:        break;   
+    }
 }
 
 void select_parameter( int v )
 {
-    if ((v > paramSelectRaw+dejitter) || (v < paramSelectRaw-dejitter))
-    {
-        paramSelectRaw = v;
-        int param = ((v * NumParams) / 256);
-        if (param != currentParam)
-        {
-            currentParam = param;
-            setParam( currentParam, paramValue[currentParam]);
-        }
-    }
+    int param = ((v * NumParams) / 256);
+
+    currentParam = param;
+    setParam( currentParam, paramValue[currentParam]);
 }
 
 void change_parameter( int v )
 {
-    int currentValue = paramValue[currentParam];
-    if ((v > currentValue+dejitter) || (v < currentValue-dejitter))
+    setParam( currentParam, v );
+}
+
+void update_param_display()
+{
+    if (updatePending >= 0)
     {
-        setParam( currentParam, v );
+        int value = paramValue[updatePending];
+        serialLcdClear();
+        sprintf(buf1,"%16s",paramLabels[updatePending]);
+        display( buf1 );
+
+        sprintf(buf2, "%5d          ", value);
+        display( buf2);
+        updatePending = -1;
     }
 }

@@ -26,6 +26,8 @@ long peakLevel = MAX_ENV;
 
 byte envState = STATE_IDLE;
 
+short gatePattern;
+
 // CORE
 
 // wave table phasors are 32 bits unsigned
@@ -85,6 +87,7 @@ void loop() {
   update_leds();
   update_midi();
   update_knobs();
+  update_param_display();
  
   //tick();
 
