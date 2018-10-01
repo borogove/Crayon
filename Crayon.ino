@@ -21,7 +21,7 @@ byte decaySetting = 18;
 byte releaseSetting = 18;
 byte sustainSetting = 64;
 long sustainLevel = MAX_ENV >> 1;
-bool decayEnabled = false;
+bool decayEnabled = true;
 long peakLevel = MAX_ENV;
 
 byte envState = STATE_IDLE;
@@ -63,7 +63,9 @@ int vibratoDepth = 16;
 volatile long display_update_wait = 0;
 
 void setup() {
-  // put your setup code here, to run once:
+  // stall before setting things up
+  while (millis() < 1000) ;
+
   setup_buttons();
   setup_audioDac();
   setup_serialLcd();
