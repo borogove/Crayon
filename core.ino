@@ -30,6 +30,8 @@ void tick()
     // TODO MODULATE OSC FREQ
     // TODO MODULATE RESO FREQ
 
+    deltaResoPhase = (deltaWavePhase / 1024) * resoRatio;
+
     // Increment wave phasors
     wavePhase += deltaWavePhase; 
     resoPhase += deltaResoPhase;
