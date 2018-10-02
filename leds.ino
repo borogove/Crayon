@@ -62,8 +62,9 @@ void update_leds()
   	{
   		blink_state = !blink_state;
      blink_counter = 0;
+       	refreshLeds();
+
   	}
-  	refreshLeds();
   } 
 }
 

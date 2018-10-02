@@ -86,7 +86,6 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   update_buttons();
-  update_serialLcd();
   update_leds();
   update_midi();
   update_knobs();

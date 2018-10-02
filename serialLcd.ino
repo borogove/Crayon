@@ -69,9 +69,3 @@ void setup_serialLcd()
 }
 
 
-void update_serialLcd()
-{
-
-  
-}
-
