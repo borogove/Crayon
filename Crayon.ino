@@ -16,17 +16,18 @@ const int STATE_RELEASE = 4;
 volatile long envLevel = 0; 
 volatile long envRate = 0;  
 
-byte attackSetting = 12;
-byte decaySetting = 18;
-byte releaseSetting = 18;
-byte sustainSetting = 64;
+byte attackSetting = 128;
+byte decaySetting = 128;
+byte releaseSetting = 128;
+byte sustainSetting = 128;
 long sustainLevel = MAX_ENV >> 1;
 bool decayEnabled = true;
 long peakLevel = MAX_ENV;
 
 byte envState = STATE_IDLE;
 
-short gatePattern;
+volatile short gatePattern;
+
 
 // CORE
 
@@ -45,16 +46,33 @@ volatile long lfoDeltaPhase = 100;
 volatile long gatePhase = 0;
 volatile long gateDeltaPhase = 100;
 
+const int MOD_BITS = ENV_BITS;
+const int MAX_MOD = MAX_ENV;
+volatile long lfoLevel;  // unsigned 23 bits
+volatile long gateLevel; // unsigned 23 bits
+long lfoDelta = 0;
+long gateDelta = 0;
 
-// HMMM either saw or tri should always be 0 so these can go to 512
-// but what if not?
-volatile short sawMix = 0;	// 0-341 (~8.4 bits)
-volatile short sqrMix = 127;	// 0-341
-volatile short triMix = 127; 	// 0-341
+volatile int envelopePitchDepth = 0;              
+volatile int envelopeShapeDepth = 0;   
+volatile int envelopeRatioDepth = 0;   
+volatile int envelopeResoDepth = 0;   
+volatile int lfoPitchDepth = 0;   
+volatile int lfoShapeDepth = 0;   
+volatile int lfoRatioDepth = 0;
+volatile int lfoResoDepth = 0;
+volatile int lfoAmpDepth = 0;   
+volatile int gatePitchDepth = 0;   
+volatile int gateShapeDepth = 0;   
+volatile int gateRatioDepth = 0;   
+volatile int gateResoDepth = 0;  
+volatile int gateAmpDepth = 0;
 
-volatile long resoDepth = 6000; // 15 bits
-volatile long resoComplement = 32768-resoDepth;
-volatile long resoRatio = 3453;
+volatile int resoDepthSetting = 127;
+volatile long waveResoScale = 6000; // 15 bits
+volatile long waveDryScale = 32768-waveResoScale;
+volatile long resoRatioSetting = 127;
+volatile int oscMixSetting = 127;
 
 
 int oscillatorShape = 0;
