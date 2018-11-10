@@ -128,13 +128,13 @@ void update_midi()
 }
 
 // K-rate = 375Hz
-const int NUM_TEST_NOTES = 3;
+const int NUM_TEST_NOTES = 6;
 
-short testOnTime[ NUM_TEST_NOTES ] = {50, 50, 100};  // k rate ticks
-short testOffTime[ NUM_TEST_NOTES ] = { 20, 20, 40 }; // k rate ticks
+short testOnTime[ NUM_TEST_NOTES ] = {150, 150, 300, 150, 150, 300};  // k rate ticks
+short testOffTime[ NUM_TEST_NOTES ] = { 50, 50, 150,  50, 50, 150 }; // k rate ticks
 
-byte testNotes[ NUM_TEST_NOTES ] = { 36, 43, 41 }; // I V IV
-byte testVelocity[ NUM_TEST_NOTES ] = { 120, 100, 80 };
+byte testNotes[ NUM_TEST_NOTES ] = { 36, 43, 41, 48, 55, 53 }; // I V IV
+byte testVelocity[ NUM_TEST_NOTES ] = { 120, 100, 80, 120, 100, 80 };
 bool testTone = false;
 long onCounter;
 long offCounter;
@@ -164,7 +164,7 @@ void updateTestTone()
                     if (testIndex == NUM_TEST_NOTES)
                     {
                         testIndex = 0;
-                        testTone = false;
+                        //testTone = false;
                         noteOff();
                     }
                 }
