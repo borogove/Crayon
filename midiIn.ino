@@ -48,7 +48,7 @@ void controlChange( byte control, byte value )
 
 void programChange( byte program )
 {
-
+    select_program(program);
 
 }
 
@@ -125,4 +125,60 @@ void update_midi()
             }
         }
     }
+}
+
+// K-rate = 375Hz
+const int NUM_TEST_NOTES = 3;
+
+short testOnTime[ NUM_TEST_NOTES ] = {50, 50, 100};  // k rate ticks
+short testOffTime[ NUM_TEST_NOTES ] = { 20, 20, 40 }; // k rate ticks
+
+byte testNotes[ NUM_TEST_NOTES ] = { 36, 43, 41 }; // I V IV
+byte testVelocity[ NUM_TEST_NOTES ] = { 120, 100, 80 };
+bool testTone = false;
+long onCounter;
+long offCounter;
+int testIndex = 0;
+
+void updateTestTone()
+{
+    if (testTone)
+    {
+        if (onCounter > 0)
+        {
+            onCounter--; 
+            if (onCounter == 0)
+            {
+                offCounter = testOffTime[testIndex];
+                noteOff();
+            }           
+        }
+        else
+        {
+            if (offCounter > 0)
+            {
+                offCounter--;
+                if (offCounter == 0)
+                {
+                    testIndex++;
+                    if (testIndex == NUM_TEST_NOTES)
+                    {
+                        testIndex = 0;
+                        testTone = false;
+                        noteOff();
+                    }
+                }
+            }
+            else
+            {
+                noteOn(testNotes[testIndex],testVelocity[testIndex]);
+                onCounter = testOnTime[testIndex];
+            }
+        }
+    }
+}
+
+void playTestTone()
+{
+    testTone = true;
 }

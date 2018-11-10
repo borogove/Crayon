@@ -33,18 +33,18 @@ enum ParameterId
     GateRate,
 
     ModEnvPitch,
-    ModEnvShape,
+    //ModEnvShape,
     ModEnvRatio,
-    ModEnvReso,     //depth
+    //ModEnvReso,     //depth
     ModLfoPitch,
     ModLfoShape,
     ModLfoRatio,
-    ModLfoReso,     //depth
-    ModLfoAmp,
+    //ModLfoReso,     //depth
+    //ModLfoAmp,
     ModGatePitch,
-    ModGateShape,
+    //ModGateShape,
     ModGateRatio,
-    ModGateReso,
+    //ModGateReso,
     ModGateAmp,
 
     // second envelope?
@@ -122,18 +122,18 @@ void setParam( int paramIndex, short value )
 
     // ALL MODS TODO
     case ModEnvPitch:       envelopePitchDepth = ((int)value)-128;  break;              
-    case ModEnvShape:       envelopeShapeDepth = ((int)value)-128;  break;   
+    //case ModEnvShape:       envelopeShapeDepth = ((int)value)-128;  break;   
     case ModEnvRatio:       envelopeRatioDepth = ((int)value)-128;  break;   
-    case ModEnvReso:        envelopeResoDepth = ((int)value)-128;  break;   
+    //case ModEnvReso:        envelopeResoDepth = ((int)value)-128;  break;   
     case ModLfoPitch:       lfoPitchDepth = ((int)value)-128;  break;   
     case ModLfoShape:       lfoShapeDepth = ((int)value)-128;  break;   
     case ModLfoRatio:       lfoRatioDepth = ((int)value)-128;  break;
-    case ModLfoReso:        lfoResoDepth = ((int)value)-128;  break;
-    case ModLfoAmp:         lfoAmpDepth = value;    break;   
+    //case ModLfoReso:        lfoResoDepth = ((int)value)-128;  break;
+    //case ModLfoAmp:         lfoAmpDepth = value;    break;   
     case ModGatePitch:      gatePitchDepth = ((int)value)-128;  break;   
-    case ModGateShape:      gateShapeDepth = ((int)value)-128;  break;   
+    //case ModGateShape:      gateShapeDepth = ((int)value)-128;  break;   
     case ModGateRatio:      gateRatioDepth = ((int)value)-128;  break;   
-    case ModGateReso:       gateResoDepth = ((int)value)-128;  break;  
+    //case ModGateReso:       gateResoDepth = ((int)value)-128;  break;  
     case ModGateAmp:        gateAmpDepth = value;   break;   
     }
 
@@ -172,4 +172,56 @@ void update_param_display()
             display_update_wait = SAMPLE_RATE / 20;
         }
     }
+}
+
+void select_program( int program )
+{
+    // todo patch memory
+
+
+    seedGen(program);
+
+    setParam( WaveShape, genByte() );
+    setParam( ResoRatio, genByte() );
+    setParam( ResoDepth, genByte() );
+
+    if (genPercent(70))
+    {
+        // fast envelopes
+        setParam( EnvelopeAttack, genByte() >> 1 );
+        setParam( EnvelopeDecay, genByte() >> 1 );
+        setParam( EnvelopeRelease, genByte() >> 1 );
+        setParam( EnvelopeSustain, genByte() >> 1 );
+    }
+    else
+    {
+        // slow envelopes
+        setParam( EnvelopeAttack,  128 + (genByte() >> 1) );
+        setParam( EnvelopeDecay,   128 + (genByte() >> 1) );
+        setParam( EnvelopeRelease, 128 + (genByte() >> 1) );
+        setParam( EnvelopeSustain, 128 + (genByte() >> 1) );
+    }
+
+    setParam( LfoShape, genByte() );
+    setParam( LfoRate, genByte() );
+    if (genPercent(70))
+    {
+        setParam( GatePattern, 0 );
+    }
+    else
+    {
+        setParam( GatePattern, genByte() );
+    }
+
+    setParam( ModEnvPitch, genByte() );
+    setParam( ModEnvRatio, genByte() );
+    setParam( ModLfoPitch, genByte() );
+    setParam( ModLfoShape, genByte() );
+    setParam( ModLfoRatio, genByte() );
+    setParam( ModGatePitch, genByte() );
+    setParam( ModGateRatio, genByte() );
+    setParam( ModGateAmp, genByte() );
+
+
+    playTestTone();
 }

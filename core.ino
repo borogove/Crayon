@@ -11,11 +11,11 @@ volatile short triMix = 127; 	// 0-341
 
 void setOscMix()
 {
-    int envMod = (envelopeShapeDepth * envLevel) >> ENV_BITS;  
+    //int envMod = (envelopeShapeDepth * envLevel) >> ENV_BITS;  
     int lfoMod = (lfoShapeDepth * lfoLevel) >> MOD_BITS;
-    int gateMod = (gateShapeDepth * gateLevel) >> MOD_BITS;
+    //int gateMod = (gateShapeDepth * gateLevel) >> MOD_BITS;
 
-    int mx = oscMixSetting + envMod + lfoMod + gateMod; // 0-255
+    int mx = oscMixSetting + lfoMod; // 0-255
     if (mx < 0)     { mx = 0; }
     if (mx > 255)   { mx = 255; } 
 
@@ -43,8 +43,13 @@ long resoRatio = 3543;
 void setResoRatio()
 {
     int envMod = (envelopeRatioDepth * envLevel) >> ENV_BITS;
-    int lfoMod = (lfoRatioDepth * lfoLevel) >> MOD_BITS;
-    int gateMod = (gateRatioDepth * gateLevel) >> MOD_BITS;
+
+    // lfo ratio depth is -128 to +127
+    // lfo level is 0-8M
+    // -- should the mod depth be unipolar and the mod wave bipolar instead? 
+    // This way lines up well with envelope and gate...
+    int lfoMod  = ( lfoRatioDepth *  (lfoLevel>>8)) >> (MOD_BITS-8);
+    int gateMod = (gateRatioDepth * (gateLevel>>8)) >> (MOD_BITS-8);
 
     
     int ratioValue = resoRatioSetting + envMod + lfoMod + gateMod;
@@ -167,12 +172,7 @@ void tick()
     // 16 bits x 10 bits (mixes sum to < 1024) = 26 bits
     unsigned long osc = (sawOsc * sawMix + sqrOsc * sqrMix + triOsc * triMix) >> 11;	// 15 bits
     
-    // aim for 15 bits here.
-    int envelopeReso = (envLevel * envelopeResoDepth) >> 16;
-    int lfoReso = (lfoLevel * lfoResoDepth) >> 16;
-    int gateReso = (gateLevel * gateResoDepth) >> 16;
-
-    int resoDepth = (resoDepthSetting << 7) + envelopeReso + lfoReso + gateReso;
+    int resoDepth = resoDepthSetting << 7;
     if (resoDepth < 0) { resoDepth = 0; }
     if (resoDepth > 32767) { resoDepth = 32767; }
     int resoComplement = 32767-resoDepth;
@@ -202,7 +202,7 @@ void updateModulators()
     set_led( 2, (gatePhase & 0x40000000) > 0 ? 1 : 0 );
 
     int lfoIx = (lfoPhase >> PHASOR_FRACTION_BITS) & TABLE_MASK;
-    unsigned long lfoTarget = ((int)tri[lfoIx]) << 7;
+    long lfoTarget = ((long)tri[lfoIx]) << 7;  // convert 16 bit to 23 bit
     // get there by the next K-rate update
     lfoDelta = (lfoTarget - lfoLevel) / CONTROL_RATE_RATIO;
 
@@ -225,4 +225,28 @@ void updateModulators()
     gateDelta = (gateTarget-gateLevel) / CONTROL_RATE_RATIO;
 
     // TODO gate contour
+
+    updateTestTone();
+}
+
+void inc_program()
+{
+    currentProgram--;
+    if (currentProgram < 0)
+    {
+        currentProgram = 127;
+    }
+
+    select_program(currentProgram);
+}
+
+void dec_program()
+{
+    currentProgram++;
+    if (currentProgram > 127)
+    {
+        currentProgram = 0;
+    }
+
+    select_program(currentProgram);
 }

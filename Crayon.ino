@@ -54,18 +54,18 @@ long lfoDelta = 0;
 long gateDelta = 0;
 
 volatile int envelopePitchDepth = 0;              
-volatile int envelopeShapeDepth = 0;   
+//volatile int envelopeShapeDepth = 0;   
 volatile int envelopeRatioDepth = 0;   
-volatile int envelopeResoDepth = 0;   
+//volatile int envelopeResoDepth = 0;   
 volatile int lfoPitchDepth = 0;   
 volatile int lfoShapeDepth = 0;   
 volatile int lfoRatioDepth = 0;
-volatile int lfoResoDepth = 0;
-volatile int lfoAmpDepth = 0;   
+//volatile int lfoResoDepth = 0;
+//volatile int lfoAmpDepth = 0;   
 volatile int gatePitchDepth = 0;   
-volatile int gateShapeDepth = 0;   
+//volatile int gateShapeDepth = 0;   
 volatile int gateRatioDepth = 0;   
-volatile int gateResoDepth = 0;  
+//volatile int gateResoDepth = 0;  
 volatile int gateAmpDepth = 0;
 
 volatile int resoDepthSetting = 127;
@@ -77,6 +77,8 @@ volatile int oscMixSetting = 127;
 
 int oscillatorShape = 0;
 int vibratoDepth = 16;
+
+int currentProgram = 0;
 
 volatile long display_update_wait = 0;
 
@@ -91,13 +93,13 @@ void setup() {
   setup_midi();
   setup_knobs();
 
-  set_button_action( BUTTON_A, page_up );
-  set_button_action( BUTTON_B, page_down );
+  set_button_action( BUTTON_A, dec_program );
+  set_button_action( BUTTON_B, inc_program );
+
+  select_program(0);
 
   set_knob_action( KNOB_A, select_parameter );
   set_knob_action( KNOB_B, change_parameter );
-  
-
 }
 
 void loop() {
