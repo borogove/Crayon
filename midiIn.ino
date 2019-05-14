@@ -25,8 +25,8 @@ short length = 0;
 void noteOn( byte note, byte velocity )
 {
     // TODO portamento
-    deltaWavePhase = deltas[note];
-    deltaResoPhase = (deltaWavePhase / 1024) * resoRatio;
+    deltaWaveBase = deltas[note];
+    deltaResoBase = (deltaWaveBase / 1024) * resoRatio;
     long peak15 = peak[velocity];
     peakLevel = peak15 << 8;
     sustainLevel = (peak15 * (long)sustainSetting) << 1;

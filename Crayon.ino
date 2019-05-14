@@ -39,7 +39,9 @@ volatile unsigned long wavePhase;
 volatile unsigned long resoPhase;
 
 volatile unsigned long deltaWavePhase;
+volatile unsigned long deltaWaveBase;
 volatile unsigned long deltaResoPhase;
+volatile unsigned long deltaResoBase;
 
 volatile long lfoPhase = 0;
 volatile long lfoDeltaPhase = 100;

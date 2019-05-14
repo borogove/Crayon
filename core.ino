@@ -12,7 +12,7 @@ volatile short triMix = 127; 	// 0-341
 void setOscMix()
 {
     //int envMod = (envelopeShapeDepth * envLevel) >> ENV_BITS;  
-    int lfoMod = (lfoShapeDepth * lfoLevel) >> MOD_BITS;
+    int lfoMod = (lfoShapeDepth * (lfoLevel>>8) >> (MOD_BITS-8);
     //int gateMod = (gateShapeDepth * gateLevel) >> MOD_BITS;
 
     int mx = oscMixSetting + lfoMod; // 0-255
@@ -50,11 +50,10 @@ void setResoRatio()
     // This way lines up well with envelope and gate...
     int lfoMod  = ( lfoRatioDepth *  (lfoLevel>>8)) >> (MOD_BITS-8);
     int gateMod = (gateRatioDepth * (gateLevel>>8)) >> (MOD_BITS-8);
-
-    
+ 
     int ratioValue = resoRatioSetting + envMod + lfoMod + gateMod;
     
-        // oof. reso ratio goes from 0.5 (down one octave, 
+    // oof. reso ratio goes from 0.5 (down one octave, 
     // which may not be useful) to... 32? up 5 octaves?
     // but the resoRatio value is scaled by 1024, so: 
     // 512 - 32768? Ideally it should probably be 
@@ -88,21 +87,17 @@ void setResoRatio()
 
 void tick()
 {
-
-
 	frames++;
 	if ((frames & CONTROL_RATE_MASK) == 0)
 	{
 		updateEnvelope();
         updateModulators();
-
 	}
 
 	if ((frames & MIDI_RATE_MASK) == 0)
 	{
 		update_midi();
 	}
-
 
 	// TODO UPDATE MODULATOR LEVELS
     tickEnvelope();
@@ -142,8 +137,30 @@ void tick()
     setResoRatio();
 
     // TODO MODULATE OSC FREQ
+    // lfoPitchDepth, gatePitchDepth, envPitchDepth
+    // each should have a max of about +/- 2 semitones or 1.125x
 
+    int lfoMod = (lfoPitchDepth * (lfoLevel >> 8)) >> (MOD_BITS-8); 
+    int gateMod = (gatePitchDepth * (gateLevel >> 8)) >> (MOD_BITS-8); 
+    int envMod = (envPitchDepth * (envLevel >> 8)) >> (ENV_BITS-8);
 
+    // UGH this is ugly-ass
+    int pitchFactor = 1024 + lfoMod + gateMod + envMod;
+    int shift = 10;
+    
+    deltaWavePhase = deltaWaveBase;
+    while (deltaWavePhase > 1048575)
+    {
+        deltaWavePhase >>= 1;
+        
+        shift -= 1;
+    }
+    while (pitchFactor > 2047)
+    {
+        pitchFactor >>= 1;
+        shift -= 1;
+    }
+    deltaWavePhase = (pitchFactor * deltaWaveBase) >> shift;
     deltaResoPhase = (deltaWavePhase / 1024) * resoRatio;
 
     // Increment wave phasors

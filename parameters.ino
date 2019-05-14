@@ -222,6 +222,5 @@ void select_program( int program )
     setParam( ModGateRatio, genByte() );
     setParam( ModGateAmp, genByte() );
 
-
     playTestTone();
 }
